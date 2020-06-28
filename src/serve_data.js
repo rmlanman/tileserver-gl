@@ -18,7 +18,7 @@ try {
 
 var utils = require('./utils');
 
-module.exports = function(options, repo, params, id, styles, publicUrl) {
+module.exports = function(options, repo, params, id, styles, publicUrl, publicProtocol, publicContextPath) {
   var app = express().disable('x-powered-by');
 
   var mbtilesFile = path.resolve(options.paths.mbtiles, params.mbtiles);
@@ -177,8 +177,9 @@ module.exports = function(options, repo, params, id, styles, publicUrl) {
 
   app.get('/' + id + '.json', function(req, res, next) {
     var info = clone(tileJSON);
+    var contextPath = publicContextPath || '';
     info.tiles = utils.getTileUrls(req, info.tiles,
-                                   'data/' + id, info.format, publicUrl, {
+                                   contextPath + 'data/' + id, info.format, publicUrl, publicProtocol, {
                                      'pbf': options.pbfAlias
                                    });
     return res.send(info);

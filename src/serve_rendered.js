@@ -97,7 +97,7 @@ function createEmptyResponse(format, color, callback) {
   });
 }
 
-module.exports = function(options, repo, params, id, publicUrl, dataResolver) {
+module.exports = function(options, repo, params, id, publicUrl, publicProtocol, publicContextPath, dataResolver) {
   var app = express().disable('x-powered-by');
 
   var maxScaleFactor = Math.min(Math.floor(options.maxScaleFactor || 3), 9);
@@ -769,8 +769,9 @@ module.exports = function(options, repo, params, id, publicUrl, dataResolver) {
 
   app.get('/' + id + '.json', function(req, res, next) {
     var info = clone(tileJSON);
+    var contextPath = publicContextPath || '';
     info.tiles = utils.getTileUrls(req, info.tiles,
-                                   'styles/' + id, info.format, publicUrl);
+                                   contextPath + 'styles/' + id, info.format, publicUrl, publicProtocol);
     return res.send(info);
   });
 

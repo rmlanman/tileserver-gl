@@ -47,6 +47,14 @@ var opts = require('commander')
     'Enable exposing the server on subpaths, not necessarily the root of the domain'
   )
   .option(
+    '--public_protocol <protocol (http|https)>',
+    'Enable using a protocol other than the one on the inbound request (useful if behind ssl-enabled proxy)'
+  )
+  .option(
+    '--public_context_path <context_path>',
+    'Enable using a special context path for tiles (useful if behind an api gateway or proxy)'
+  )
+  .option(
     '-V, --verbose',
     'More verbose output'
   )
@@ -75,6 +83,11 @@ var startServer = function(configPath, config) {
   if (publicUrl && publicUrl.lastIndexOf('/') !== publicUrl.length - 1) {
     publicUrl += '/';
   }
+
+  var publicContextPath = opts.public_context_path;
+  if (publicContextPath && publicContextPath.lastIndexOf('/') !== publicContextPath.length - 1) {
+      publicContextPath += '/';
+  }
   return require('./server')({
     configPath: configPath,
     config: config,
@@ -85,7 +98,9 @@ var startServer = function(configPath, config) {
     silent: opts.silent,
     logFile: opts.log_file,
     logFormat: opts.log_format,
-    publicUrl: publicUrl
+    publicUrl: publicUrl,
+    publicProtocol: opts.public_protocol,
+    publicContextPath: publicContextPath
   });
 };
 

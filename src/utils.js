@@ -7,11 +7,13 @@ var clone = require('clone'),
     glyphCompose = require('glyph-pbf-composite');
 
 
-module.exports.getPublicUrl = function(publicUrl, req) {
-  return publicUrl || (req.protocol + '://' + req.headers.host + '/')
+module.exports.getPublicUrl = function(publicUrl, publicProtocol, publicContextPath, req) {
+  var protocol = publicProtocol || req.protocol;
+  var contextPath = publicContextPath || '';
+  return publicUrl || (protocol + '://' + req.headers.host + '/' + contextPath)
 }
 
-module.exports.getTileUrls = function(req, domains, path, format, publicUrl, aliases) {
+module.exports.getTileUrls = function(req, domains, path, format, publicUrl, publicProtocol, aliases) {
 
   if (domains) {
     if (domains.constructor === String && domains.length > 0) {
@@ -56,7 +58,8 @@ module.exports.getTileUrls = function(req, domains, path, format, publicUrl, ali
   var uris = [];
   if (!publicUrl) {
     domains.forEach(function(domain) {
-      uris.push(req.protocol + '://' + domain + '/' + path +
+      var protocol = publicProtocol || req.protocol;
+      uris.push(protocol + '://' + domain + '/' + path +
                 '/{z}/{x}/{y}.' + format + query);
     });
   } else {
